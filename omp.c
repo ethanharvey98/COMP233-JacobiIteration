@@ -8,9 +8,12 @@
 #include <string.h>
 #include <math.h>
 #include <time.h>
+#include <omp.h>
 
 int main(int argc, char** argv) {
 
+	// Number of threads
+	const int THREADS = (int) argv[0];
 	// Max number of iterations
 	const int MAXITERATIONS = 500000;
 	// Dimensions of the 2D array
@@ -52,6 +55,9 @@ int main(int argc, char** argv) {
 		xnew[i] = (float*)malloc((MAXN) * sizeof(float));
 	}
 
+	// Set number of threads
+	omp_set_num_threads(THREADS);
+
 	// Start timer
 	start = clock();
 
@@ -83,6 +89,7 @@ int main(int argc, char** argv) {
 		// Compute new values but not on boundary
 		itcnt++;
 		diffnorm = 0.0;
+#pragma omp parallel for private(r, c) reduction(+:diffnorm)
 		for (r = 1; r < MAXN - 1; r++) {
 			for (c = 1; c < MAXN - 1; c++) {
 				xnew[r][c] = (xold[r][c + 1] + xold[r][c - 1] +
@@ -106,7 +113,7 @@ int main(int argc, char** argv) {
 
 	// End timer
 	stop = clock();
-	total = (double) (stop - start) / CLOCKS_PER_SEC;
+	total = stop - start / CLOCKS_PER_SEC;
 
 	// Print to file
 	FILE* fp;
