@@ -40,6 +40,9 @@ int main(int argc, char** argv) {
 	clock_t start, stop;
 	double total;
 
+	// Start timer
+	start = clock();
+
 	// xold
 	xold = (float**)malloc((MAXN) * sizeof(float*));
 	for (i = 0; i < MAXN; i++) {
@@ -51,9 +54,6 @@ int main(int argc, char** argv) {
 	for (i = 0; i < MAXN; i++) {
 		xnew[i] = (float*)malloc((MAXN) * sizeof(float));
 	}
-
-	// Start timer
-	start = clock();
 
 	// Start header
 	printf("Ethan Harvey ~ COMP 233 ~ Jacobi Iteration\n\n");
@@ -104,10 +104,6 @@ int main(int argc, char** argv) {
 
 	} while (sqrt(diffnorm) > 1.0e-2 && itcnt < MAXITERATIONS);
 
-	// End timer
-	stop = clock();
-	total = (double) (stop - start) / CLOCKS_PER_SEC;
-
 	// Print to file
 	FILE* fp;
 	fp = fopen("jacobi.ppm", "w");
@@ -128,6 +124,10 @@ int main(int argc, char** argv) {
 		fclose(fp);
 	}
 
+	// End timer
+	stop = clock();
+	total = (double) (stop - start) / CLOCKS_PER_SEC;
+	
 	// Cleanup
 	for (i = 0; i < MAXN; i++) {
 		free(xold[i]);

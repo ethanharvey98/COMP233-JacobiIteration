@@ -13,7 +13,7 @@
 int main(int argc, char** argv) {
 
 	// Number of threads
-	const int THREADS = (int) argv[0];
+	const int THREADS = atoi(argv[1]);
 	// Max number of iterations
 	const int MAXITERATIONS = 500000;
 	// Dimensions of the 2D array
@@ -40,8 +40,10 @@ int main(int argc, char** argv) {
 	// Temp pointer
 	float** xtemp;
 	// Time variables
-	clock_t start, stop;
-	double total;
+	double start, stop, total;
+
+	// Start timer
+	start = omp_get_wtime();
 
 	// xold
 	xold = (float**)malloc((MAXN) * sizeof(float*));
@@ -57,9 +59,6 @@ int main(int argc, char** argv) {
 
 	// Set number of threads
 	omp_set_num_threads(THREADS);
-
-	// Start timer
-	start = clock();
 
 	// Start header
 	printf("Ethan Harvey ~ COMP 233 ~ Jacobi Iteration\n\n");
@@ -111,10 +110,6 @@ int main(int argc, char** argv) {
 
 	} while (sqrt(diffnorm) > 1.0e-2 && itcnt < MAXITERATIONS);
 
-	// End timer
-	stop = clock();
-	total = stop - start / CLOCKS_PER_SEC;
-
 	// Print to file
 	FILE* fp;
 	fp = fopen("jacobi.ppm", "w");
@@ -134,6 +129,10 @@ int main(int argc, char** argv) {
 		}
 		fclose(fp);
 	}
+
+	// End timer
+	stop = omp_get_wtime();
+	total = stop - start;
 
 	// Cleanup
 	for (i = 0; i < MAXN; i++) {
